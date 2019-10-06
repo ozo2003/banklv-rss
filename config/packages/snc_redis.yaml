@@ -1,0 +1,75 @@
+snc_redis:
+    clients:
+        default:
+            type: predis
+            alias: default
+            dsn:
+                - '%env(resolve:REDIS_URL1)%'
+                - '%env(resolve:REDIS_URL2)%'
+            options:
+                connection_persistent: true
+                replication: sentinel
+                service: mymaster
+                throw_errors: true
+                parameters:
+                    database: 1
+                prefix: '%env(APP_NAME)%_default_'
+            logging: '%kernel.debug%'
+        cache:
+            type: predis
+            alias: cache
+            dsn:
+                - '%env(resolve:REDIS_URL1)%'
+                - '%env(resolve:REDIS_URL2)%'
+            options:
+                connection_persistent: true
+                replication: sentinel
+                service: mymaster
+                throw_errors: true
+                parameters:
+                    database: 2
+                prefix: '%env(APP_NAME)%_cache_'
+            logging: '%kernel.debug%'
+        meta:
+            type: predis
+            alias: meta
+            dsn:
+                - '%env(resolve:REDIS_URL1)%'
+                - '%env(resolve:REDIS_URL2)%'
+            options:
+                connection_persistent: true
+                replication: sentinel
+                service: mymaster
+                throw_errors: true
+                parameters:
+                    database: 3
+                prefix: '%env(APP_NAME)%_meta_'
+            logging: '%kernel.debug%'
+    session:
+        client: default
+        prefix: 'session_'
+    doctrine:
+        metadata_cache:
+            client: meta
+            entity_manager: default
+            document_manager: default
+        result_cache:
+            client: cache
+            entity_manager: default
+        query_cache:
+            client: cache
+            entity_manager: default
+        second_level_cache:
+            client: cache
+            entity_manager: default
+
+services:
+    meta.snc.client:
+        class: Doctrine\Common\Cache\PredisCache
+        arguments:
+            - '@snc_redis.meta'
+
+    cache.snc.client:
+        class: Doctrine\Common\Cache\PredisCache
+        arguments:
+            - '@snc_redis.meta'

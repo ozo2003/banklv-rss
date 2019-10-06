@@ -1,0 +1,23 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Application,Kernel.php}'
+
+    App\Controller\:
+        resource: '../src/Controller'
+        tags:
+            - 'controller.service_arguments'
+
+    App\Feed\Reader:
+        arguments:
+            - '@Symfony\Contracts\HttpClient\HttpClientInterface'
+
+    App\Twig\PaginationExtension:
+        public: false
+        tags:
+            -
+                name: twig.extension

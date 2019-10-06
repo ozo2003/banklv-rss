@@ -31,18 +31,11 @@ class FixedLength extends AbstractBehaviour
      */
     private function setMaximumVisible(int $maximumVisible): void
     {
-        $this->guardMaximumVisibleMinimumValue($maximumVisible);
-        $this->maximumVisible = $maximumVisible;
-    }
-
-    /**
-     * @param int $maximumVisible
-     */
-    private function guardMaximumVisibleMinimumValue(int $maximumVisible): void
-    {
         if ($maximumVisible < self::MIN_VISIBLE) {
             throw new InvalidArgumentException(sprintf('Maximum of number of visible pages (%d) should be at least %d.', $maximumVisible, self::MIN_VISIBLE));
         }
+
+        $this->maximumVisible = $maximumVisible;
     }
 
     /**
@@ -69,31 +62,21 @@ class FixedLength extends AbstractBehaviour
     /**
      * @param int $totalPages
      * @param int $currentPage
-     * @param int $omittedPagesIndicator
+     * @param int $indicator
      *
      * @return array
      */
-    public function getPaginationData(int $totalPages, int $currentPage, int $omittedPagesIndicator = -1): array
+    public function getPaginationData(int $totalPages, int $currentPage, int $indicator = -1): array
     {
-        $this->guardPaginationData($totalPages, $currentPage, $omittedPagesIndicator);
+        $this->guardPaginationData($totalPages, $currentPage, $indicator);
         if ($totalPages <= $this->maximumVisible) {
-            return $this->getPaginationDataWithNoOmittedChunks($totalPages);
+            return range(1, $totalPages);
         }
         if ($this->hasSingleOmittedChunk($totalPages, $currentPage)) {
-            return $this->getPaginationDataWithSingleOmittedChunk($totalPages, $currentPage, $omittedPagesIndicator);
+            return $this->getPaginationDataWithSingleOmittedChunk($totalPages, $currentPage, $indicator);
         }
 
-        return $this->getPaginationDataWithTwoOmittedChunks($totalPages, $currentPage, $omittedPagesIndicator);
-    }
-
-    /**
-     * @param int $totalPages
-     *
-     * @return array
-     */
-    private function getPaginationDataWithNoOmittedChunks(int $totalPages): array
-    {
-        return range(1, $totalPages);
+        return $this->getPaginationDataWithTwoOmittedChunks($totalPages, $currentPage, $indicator);
     }
 
     /**

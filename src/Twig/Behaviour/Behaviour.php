@@ -7,9 +7,9 @@ interface Behaviour
     /**
      * @param int $totalPages
      * @param int $currentPage
-     * @param int $omittedPagesIndicator
+     * @param int $indicator
      *
      * @return array
      */
-    public function getPaginationData(int $totalPages, int $currentPage, int $omittedPagesIndicator = -1): array;
+    public function getPaginationData(int $totalPages, int $currentPage, int $indicator = -1): array;
 }

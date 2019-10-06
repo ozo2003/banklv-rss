@@ -2,10 +2,10 @@
     <ul class="pagination">
         {% if page > 1 %}
             <li class="page-item">
-                <a class="page-link" href="{{ path('index') ~ '?page=' ~ (page - 1) ~ '&date=' ~ date }}"><<</a>
+                <a class="page-link" href="{{ path('index') ~ '?page=' ~ (page - 1) ~ '&date=' ~ date }}">prev</a>
             </li>
         {% endif %}
-        {% for key, item in pagination(5, max, page) %}
+        {% for item in pagination(7, max, page) %}
             {% if item == -1 %}
                 <li class="page-item disabled">
                     <a class="page-link" href="{{ path('index') ~ '?page=' ~ item ~ '&date=' ~ date }}#">...</a>
@@ -22,7 +22,7 @@
         {% endfor %}
         {% if page < max %}
             <li class="page-item">
-                <a class="page-link" href="{{ path('index') ~ '?page=' ~ (page + 1) ~ '&date=' ~ date }}">>></a>
+                <a class="page-link" href="{{ path('index') ~ '?page=' ~ (page + 1) ~ '&date=' ~ date }}">next</a>
             </li>
         {% endif %}
     </ul>

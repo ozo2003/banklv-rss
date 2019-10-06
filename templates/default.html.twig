@@ -22,8 +22,8 @@
                         <div class="col-md-6">
                             EUR / {{ rate.currency.code }}
                         </div>
-                        <div class="col-md-6">
-                            {{ rate.rate|number_format(4) }}
+                        <div class="col-md-6 text-right">
+                            {{ rate.rate|number_format(8) }}
                         </div>
                     </div>
                 </div>
@@ -32,8 +32,8 @@
                         <div class="col-md-6">
                             {{ rate.currency.code }} / EUR
                         </div>
-                        <div class="col-md-6">
-                            {{ (1 / rate.rate)|number_format(4) }}
+                        <div class="col-md-6 text-right">
+                            {{ (1 / rate.rate)|number_format(8) }}
                         </div>
                     </div>
                 </div>

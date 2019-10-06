@@ -7,7 +7,6 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use function checkdate;
-use function dump;
 use function explode;
 use function sprintf;
 
@@ -51,11 +50,19 @@ class RateReposirory extends EntityRepository
                 $dateObject = DateTime::createFromFormat('Y-m-d H:i:s', $result);
             }
         } else {
-            [$d, $m, $y] = explode('.', $date);
-            if (!checkdate((int)$d, (int)$m, (int)$y)) {
+            $dmy = explode('.', $date);
+            if (3 !== count($dmy)) {
                 throw new InvalidArgumentException(sprintf('Invalid date %s! Date must be in dd.mm.YYYY format', $date));
             }
+            [$d, $m, $y] = $dmy;
+            if (!checkdate((int)$d, (int)$m, (int)$y)) {
+                throw new InvalidArgumentException(sprintf('Invalid date %s', $date));
+            }
             $dateObject = DateTime::createFromFormat('d.m.Y', $date);
+        }
+
+        if (false === $dateObject) {
+            throw new InvalidArgumentException(sprintf('Invalid date %s', $date));
         }
 
         $dateObject->setTime(0, 0, 0);

@@ -20,8 +20,8 @@ class RssController extends AbstractController
      */
     public function index(Request $request): Response
     {
-        $em = $this->getDoctrine()->getManager()->getRepository(Rate::class);
         $limit = 10;
+        $em = $this->getDoctrine()->getManager()->getRepository(Rate::class);
         $options = [
             'page' => $page = abs((int)$request->query->get('page', 1)),
             'date' => $date = $request->query->get('date', 'latest'),
@@ -32,6 +32,6 @@ class RssController extends AbstractController
         $count = $em->findRateCount($date);
         $options['max'] = (int)ceil($count / $limit);
 
-        return $this->render('base.html.twig', $options);
+        return $this->render('default.html.twig', $options);
     }
 }

@@ -1,0 +1,110 @@
+version: '3.7'
+services:
+    rss:
+        build:
+            context: .
+            dockerfile: ./.docker/Dockerfile
+        container_name: rss
+        volumes:
+            - .:/var/www
+            - cache:/var/www/var/cache
+        labels:
+            - traefik.enable=true
+            - traefik.backend=rss
+            - traefik.frontend.rule=Host:${URL}
+            - traefik.docker.network=rss_traefik
+        restart: always
+        networks:
+            - rss_traefik
+            - rss_backend
+            - rss_app
+        ports:
+            - 9666:80
+        depends_on:
+            - rss_proxy
+
+    rss_maria:
+        image: mariadb/server:latest
+        container_name: rss_maria
+        command: --default-authentication-plugin=mysql_native_password
+        ports:
+            - 3307:3306
+        volumes:
+            - ./.docker/mysql:/var/lib/mysql:rw,delegated
+            - ./.docker/mariadb:/etc/mysql/mariadb.conf.d
+        environment:
+            - MYSQL_ROOT_PASSWORD=banklv-rss
+            - MYSQL_ALLOW_EMPTY_PASSWORD=no
+            - MYSQL_ROOT_HOST=%
+        restart: always
+        networks:
+            - rss_backend
+
+    rss_proxy:
+        image: traefik:latest
+        container_name: rss_proxy
+        command: --docker --docker.exposedbydefault=false
+        ports:
+            - 9000:80
+        networks:
+            - rss_traefik
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./.docker/traefik:/etc/traefik
+        restart: always
+        labels:
+            - traefik.docker.network=rss_traefik
+            - traefik.enable=true
+
+    rss_redis_1:
+        image: bitnami/redis:latest
+        container_name: rss_redis_1
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+        networks:
+            - rss_app
+            - rss_backend
+        restart: always
+    rss_sentinel_1:
+        image: bitnami/redis-sentinel:latest
+        container_name: rss_sentinel_1
+        environment:
+            - REDIS_MASTER_HOST=rss_redis_1
+        ports:
+            - 6666:26379
+        networks:
+            - rss_app
+            - rss_backend
+        restart: always
+    rss_redis_2:
+        image: bitnami/redis:latest
+        container_name: rss_redis_2
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+        networks:
+            - rss_app
+            - rss_backend
+        restart: always
+    rss_sentinel_2:
+        image: bitnami/redis-sentinel:latest
+        container_name: rss_sentinel_2
+        environment:
+            - REDIS_MASTER_HOST=rss_redis_2
+        ports:
+            - 6667:26379
+        networks:
+            - rss_app
+            - rss_backend
+        restart: always
+
+networks:
+    rss_traefik:
+        name: rss_traefik
+    rss_backend:
+        name: rss_backend
+    rss_app:
+        name: rss_app
+        driver: bridge
+
+volumes:
+    cache:

@@ -1,0 +1,52 @@
+# traefik.toml
+#
+# Search this file for "YOUR_" to find the two locations you need to edit.
+#
+################################################################
+# Global configuration
+################################################################
+# Log level
+#
+# Optional
+# Default: "ERROR"
+# Accepted values, in order of severity: "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "PANIC"
+# Messages at and above the selected level will be logged.
+#
+logLevel = "WARN"
+debug = true
+
+[api]
+
+[traefikLog]
+  filePath = "/etc/traefik/traefik.log"
+
+# Entrypoints to be used by frontends that do not specify any entrypoint.
+# Each frontend can specify its own entrypoints.
+defaultEntryPoints = ["http", "https"]
+# Entrypoints, http and https
+[entryPoints]
+  # http should be redirected to https
+  [entryPoints.http]
+  address = ":80"
+    # [entryPoints.http.redirect]
+    # entryPoint = "https"
+  # https is the default
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.traefik]
+    address = ":8080"
+
+# Enable Docker configuration backend
+[docker]
+# Docker server endpoint. Can be a tcp or a unix socket endpoint.
+endpoint = "unix:///var/run/docker.sock"
+# Default domain used.
+# Can be overridden by setting the "traefik.domain" label on a container.
+domain = "vairogs.com"
+# Enable watch docker changes
+watch = true
+# Expose containers by default in traefik
+# If set to false, containers that don't have `traefik.enable=true` will be ignored
+exposedbydefault = false
+insecureskipverify = true
+

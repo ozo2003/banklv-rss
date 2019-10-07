@@ -1,4 +1,4 @@
-#banklv-rss
+# banklv-rss
 
 1. git clone https://github.com/ozo2003/banklv-rss.git
 2. cd banklv-rss

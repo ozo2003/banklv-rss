@@ -28,7 +28,7 @@ services:
         container_name: rss_maria
         command: --default-authentication-plugin=mysql_native_password
         ports:
-            - 3307:3306
+            - 3308:3306
         volumes:
             - ./.docker/mysql:/var/lib/mysql:rw,delegated
             - ./.docker/mariadb:/etc/mysql/mariadb.conf.d
@@ -100,11 +100,20 @@ services:
 networks:
     rss_traefik:
         name: rss_traefik
+        ipam:
+            config:
+                - subnet: 172.66.66.0/24
     rss_backend:
         name: rss_backend
+        ipam:
+            config:
+                - subnet: 172.66.67.0/24
     rss_app:
         name: rss_app
         driver: bridge
+        ipam:
+            config:
+                - subnet: 172.66.68.0/24
 
 volumes:
     cache:

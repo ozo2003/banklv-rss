@@ -99,6 +99,9 @@
     "psr/container": {
         "version": "1.0.0"
     },
+    "psr/http-message": {
+        "version": "1.0.1"
+    },
     "psr/log": {
         "version": "1.1.0"
     },
@@ -124,7 +127,7 @@
         "version": "4.4.x-dev"
     },
     "symfony/cache-contracts": {
-        "version": "1.1-dev"
+        "version": "v1.1.7"
     },
     "symfony/config": {
         "version": "4.4.x-dev"
@@ -173,7 +176,7 @@
         "version": "4.4.x-dev"
     },
     "symfony/event-dispatcher-contracts": {
-        "version": "v1.1.5"
+        "version": "v1.1.7"
     },
     "symfony/filesystem": {
         "version": "4.4.x-dev"
@@ -217,7 +220,7 @@
         "version": "4.4.x-dev"
     },
     "symfony/http-client-contracts": {
-        "version": "1.1-dev"
+        "version": "v1.1.7"
     },
     "symfony/http-foundation": {
         "version": "4.4.x-dev"
@@ -282,7 +285,7 @@
         "version": "4.4.x-dev"
     },
     "symfony/service-contracts": {
-        "version": "v1.1.6"
+        "version": "v1.1.7"
     },
     "symfony/stopwatch": {
         "version": "4.4.x-dev"
@@ -291,7 +294,7 @@
         "version": "4.4.x-dev"
     },
     "symfony/translation-contracts": {
-        "version": "v1.1.6"
+        "version": "v1.1.7"
     },
     "symfony/twig-bridge": {
         "version": "4.4.x-dev"
@@ -361,8 +364,11 @@
     "twig/twig": {
         "version": "v2.12.0"
     },
+    "vairogs/utils": {
+        "version": "2.x-dev"
+    },
     "zendframework/zend-code": {
-        "version": "3.3.2"
+        "version": "3.4.0"
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.1"

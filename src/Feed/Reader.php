@@ -2,7 +2,9 @@
 
 namespace App\Feed;
 
+use App\Model\Feed;
 use DOMDocument;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -30,20 +32,27 @@ class Reader
     /**
      * @param string $url
      *
-     * @return mixed
+     * @return Feed
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function read(string $url)
+    public function read(string $url): Feed
     {
-        $response = $this->client->request(Request::METHOD_GET, $url);
-        if ($response->getStatusCode() === Response::HTTP_OK) {
+        $response = null;
+        try {
+            $response = $this->client->request(Request::METHOD_GET, $url);
+            $status = $response->getStatusCode();
+        } catch (Exception $e) {
+            $status = $e->getCode();
+        }
+
+        if ($status === Response::HTTP_OK) {
             $document = new DOMDocument();
             $document->loadXML($response->getContent());
 
-            return ChannelDOMDocumentFactory::create($document);
+            return (new Parser())->parse($document);
         }
 
         throw new BadRequestHttpException($response->getContent());

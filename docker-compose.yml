@@ -38,11 +38,10 @@ services:
         ports:
             - 3308:3306
         volumes:
-            - ./.docker/mysql:/var/lib/mysql:rw,delegated
-            - ./.docker/mariadb:/etc/mysql/mariadb.conf.d
+            - /var/lib/mysql
+            - ./.docker/mariadb:/etc/mysql/mariadb.conf.d:ro
         environment:
-            - MYSQL_ROOT_PASSWORD=banklv-rss
-            - MYSQL_ALLOW_EMPTY_PASSWORD=no
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
             - MYSQL_ROOT_HOST=%
         restart: always
         networks:

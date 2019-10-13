@@ -17,6 +17,9 @@ doctrine:
                 connection: default
                 naming_strategy: doctrine.orm.naming_strategy.underscore
                 class_metadata_factory_name: Doctrine\ORM\Mapping\ClassMetadataFactory
+                dql:
+                    string_functions:
+                        DATE: App\Utils\Doctrine\Query\Mysql\Date
                 auto_mapping: true
                 second_level_cache:
                     enabled: true

@@ -10,7 +10,7 @@ trait BaseFields
     use CreatedModified;
 
     /**
-     * @var null|int
+     * @var int|null
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")

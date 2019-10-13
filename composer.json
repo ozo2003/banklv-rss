@@ -76,14 +76,19 @@
             "r:flushall -n": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts"
+            "rm -rf var/cache/*",
+            "@auto-scripts",
+            "chmod -R 777 var/cache"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "rm -rf var/cache/*",
+            "@auto-scripts",
+            "chmod -R 777 var/cache"
         ]
     },
     "conflict": {
-        "symfony/symfony": "*"
+        "symfony/symfony": "*",
+        "php": "7.3.6"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

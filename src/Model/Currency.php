@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 
 namespace App\Model;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,7 +11,7 @@ class Currency
 {
     /**
      * @var string
-     * @ORM\Column(type="string", length=3, nullable=false)
+     * @ORM\Column(type="string", length=5, nullable=false)
      */
     protected $code;
 

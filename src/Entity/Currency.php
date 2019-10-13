@@ -17,21 +17,26 @@ class Currency extends Model\Currency
     use BaseFields;
 
     /**
-     * @var Rate[]|ArrayCollection
+     * @var ArrayCollection
      * @ORM\OneToMany(targetEntity="Rate", mappedBy="currency", fetch="LAZY")
      */
     private $rates;
 
+    public function __construct()
+    {
+        $this->rates = new ArrayCollection();
+    }
+
     /**
-     * @return Rate[]|ArrayCollection
+     * @return ArrayCollection
      */
-    public function getRates()
+    public function getRates(): ArrayCollection
     {
         return $this->rates;
     }
 
     /**
-     * @param Rate[]|ArrayCollection $rates
+     * @param ArrayCollection $rates
      *
      * @return Currency
      */
@@ -49,7 +54,7 @@ class Currency extends Model\Currency
      */
     public function addRate(Rate $rate): Currency
     {
-        $this->rates[] = $rate;
+        $this->rates->add($rate);
 
         return $this;
     }

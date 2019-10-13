@@ -3,15 +3,15 @@ services:
     rss:
         build:
             context: .
-            dockerfile: ./.docker/Dockerfile
+            dockerfile: ./.docker/build.dockerfile
         container_name: rss
         volumes:
             - .:/var/www
             - cache:/var/www/var/cache
+            - vendor:/var/www/vendor
         labels:
             - traefik.enable=true
             - traefik.backend=rss
-            - traefik.frontend.rule=Host:${URL}
             - traefik.docker.network=rss_traefik
         restart: always
         networks:
@@ -22,6 +22,8 @@ services:
             - 9666:80
         depends_on:
             - rss_proxy
+        environment:
+            TZ: "Europe/Riga"
 
     rss_maria:
         image: mariadb/server:latest
@@ -117,3 +119,4 @@ networks:
 
 volumes:
     cache:
+    vendor:

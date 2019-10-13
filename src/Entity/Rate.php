@@ -7,7 +7,7 @@ use App\Utils\Doctrine\BaseFields;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\RateReposirory")
+ * @ORM\Entity(repositoryClass="App\Repository\RateRepository")
  * @ORM\Table(name="rate")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -21,6 +21,33 @@ class Rate extends Model\Rate
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      */
     private $currency;
+
+    /**
+     * @var Exchange
+     * @ORM\ManyToOne(targetEntity="Exchange", inversedBy="rates", fetch="EAGER")
+     * @ORM\JoinColumn(name="exchange_id", referencedColumnName="id")
+     */
+    private $exchange;
+
+    /**
+     * @return Exchange
+     */
+    public function getExchange(): Exchange
+    {
+        return $this->exchange;
+    }
+
+    /**
+     * @param Exchange $exchange
+     *
+     * @return Rate
+     */
+    public function setExchange(Exchange $exchange): Rate
+    {
+        $this->exchange = $exchange;
+
+        return $this;
+    }
 
     /**
      * @return Currency

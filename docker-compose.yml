@@ -9,6 +9,7 @@ services:
             - .:/var/www
             - cache:/var/www/var/cache
             - vendor:/var/www/vendor
+            - composer:/root/.composer
         labels:
             - traefik.enable=true
             - traefik.backend=rss

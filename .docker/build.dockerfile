@@ -40,7 +40,5 @@ RUN mkdir -p /var/www/var/cache
 RUN chown -R www-data:www-data /var/www/var
 
 COPY . /var/www
-RUN composer install -nq --no-scripts
-RUN composer dump-env prod
 
 RUN chmod +x /var/www/command.sh

@@ -2,40 +2,40 @@
 
 namespace App\Controller;
 
-use App\Feed\RateFacade;
-use App\Feed\Reader;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Rate;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function dump;
+use function abs;
+use function ceil;
 
 class RssController extends AbstractController
 {
     /**
-     * @Route("/", name="index", methods={Request::METHOD_GET})
+     * @param Request $request
+     *
+     * @return Response
+     * @throws NonUniqueResultException
+     * @Route(path="/", name="index", methods={Request::METHOD_GET})
      */
-    public function index(Reader $reader, EntityManagerInterface $manager)
+    public function index(Request $request): Response
     {
-        //try {
-        //    //$feed = $reader->read('https://www.bank.lv/vk/ecb_rss.xml');
-        $feed2 = $reader->read('https://www.snb.ch/selector/en/mmr/exfeed/rss', ['timeout' => 30]);
-        //    //$feed3 = $reader->read('https://eur.fxexchangerate.com/rss.xml');
-        //} catch (Exception $e){
-        //
-        //}
-        //$feed4 = $reader->read('http://www.floatrates.com/daily/eur.xml');
-        //
-        //if($feed4) {
-        //    foreach ($feed4->getItems() as $item) {
-        //        /** @var Element $item */
-        //        dump($item->getDescription());
-        //    }
-        //}
+        $limit = 10;
+        $em = $this->getDoctrine()
+            ->getManager()
+            ->getRepository(Rate::class);
+        $options = [
+            'page' => $page = abs((int)$request->query->get('page', 1)),
+            'date' => $date = $request->query->get('date', 'latest'),
+            'rates' => $em->findRates($date, $limit, ($page - 1) * $limit),
+            'dates' => $em->getDates(),
+        ];
 
-        $facade = new RateFacade($manager, $reader);
-        dump($facade->getRates());
+        $count = $em->findRateCount($date);
+        $options['max'] = (int)ceil($count / $limit);
 
-        exit;
+        return $this->render('default.html.twig', $options);
     }
 }

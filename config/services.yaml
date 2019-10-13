@@ -16,8 +16,8 @@ services:
         arguments:
             - '@Symfony\Contracts\HttpClient\HttpClientInterface'
 
-#    App\Twig\PaginationExtension:
-#        public: false
-#        tags:
-#            -
-#                name: twig.extension
+    App\Twig\PaginationExtension:
+        public: false
+        tags:
+            -
+                name: twig.extension

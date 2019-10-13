@@ -81,6 +81,16 @@ class RateFacade
         return new ArrayCollection($rates);
     }
 
+    /**
+     * @param Exchange|null $exchange
+     *
+     * @return ArrayCollection
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ReflectionException
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
     private function getBankRates(?Exchange $exchange): ArrayCollection
     {
         $collection = new ArrayCollection();
@@ -88,7 +98,7 @@ class RateFacade
         if (null !== $exchange && $feed = $this->reader->read($exchange->getUrl())) {
             foreach ($feed->getItems() as $item) {
                 /** @var Element $item */
-                if (true === $this->checkIfAlreadySaved($item->getPubDate(), $exchange)) {
+                if (true === $this->isDateAlreadySubmitted($item->getPubDate(), $exchange)) {
                     $values = explode(' ', trim($item->getDescription()));
                     $rates = [];
                     for ($i = 0; $i < (count($values)); $i += 2) {
@@ -106,10 +116,12 @@ class RateFacade
 
     /**
      * @param DateTime $dateTime
+     * @param Exchange $exchange
+     * @param string|null $currency
      *
      * @return bool
      */
-    private function checkIfAlreadySaved(DateTime $dateTime, Exchange $exchange, ?string $currency = null): bool
+    private function isDateAlreadySubmitted(DateTime $dateTime, Exchange $exchange, ?string $currency = null): bool
     {
         return $this->em->getRepository(Rate::class)
             ->isDateAlreadySubmitted($dateTime, $exchange, $currency);
@@ -170,7 +182,7 @@ class RateFacade
             $pubDate = null;
             foreach ($feed->getItems() as $item) {
                 preg_match_all('/\(([^)]+)\)/', $item->getTitle(), $matches);
-                if (true === $this->checkIfAlreadySaved($item->getPubDate(), $exchange, $currency = $matches[1][1])) {
+                if (true === $this->isDateAlreadySubmitted($item->getPubDate(), $exchange, $currency = $matches[1][1])) {
                     /** @var Element $item */
                     if (null === $pubDate) {
                         $pubDate = $item->getPubDate();
@@ -207,7 +219,7 @@ class RateFacade
             $pubDate = null;
             foreach ($feed->getItems() as $item) {
                 /** @var Element $item */
-                if (true === $this->checkIfAlreadySaved($item->getPubDate(), $exchange, $item->getTargetCurrency())) {
+                if (true === $this->isDateAlreadySubmitted($item->getPubDate(), $exchange, $item->getTargetCurrency())) {
                     if (null === $pubDate) {
                         $pubDate = $item->getPubDate();
                     }

@@ -13,7 +13,7 @@ services:
             - traefik.enable=true
             - traefik.backend=rss
             - traefik.docker.network=rss_traefik
-        restart: always
+        restart: on-failure
         networks:
             - rss_traefik
             - rss_backend
@@ -22,8 +22,14 @@ services:
             - 9666:80
         depends_on:
             - rss_proxy
+            - rss_maria
+            - rss_sentinel_1
+            - rss_sentinel_2
+            - rss_redis_1
+            - rss_redis_2
         environment:
             TZ: "Europe/Riga"
+        command: ["./command.sh"]
 
     rss_maria:
         image: mariadb/server:latest
@@ -120,3 +126,4 @@ networks:
 volumes:
     cache:
     vendor:
+    composer:

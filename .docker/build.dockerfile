@@ -25,22 +25,22 @@ RUN docker-php-ext-install gettext xml json simplexml pdo_mysql
 RUN docker-php-ext-configure intl && docker-php-ext-install intl
 
 #Add apache configs
-ADD .docker/000-default.conf /etc/apache2/sites-enabled/000-default.conf
-ADD .docker/ports.conf /etc/apache2/ports.conf
-ADD .docker/apache2.conf /etc/apache2/apache2.conf
-ADD .docker/envvars /etc/apache2/envvars
-ADD .docker/php.ini /usr/local/etc/php/php.ini
+ADD .docker/apache/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+ADD .docker/apache/ports.conf /etc/apache2/ports.conf
+ADD .docker/apache/apache2.conf /etc/apache2/apache2.conf
+ADD .docker/apache/envvars /etc/apache2/envvars
+ADD .docker/apache/php.ini /usr/local/etc/php/php.ini
 
 RUN service apache2 restart
+
+WORKDIR /var/www
 
 RUN rm -rf /var/www/var/cache
 RUN mkdir -p /var/www/var/cache
 RUN chown -R www-data:www-data /var/www/var
 
-WORKDIR /var/www
-
 COPY . /var/www
-RUN composer install -n
+RUN composer install -nq --no-scripts
 RUN composer dump-env prod
-RUN bin/console d:d:c -n
-RUN bin/console d:m:m -n
+
+RUN chmod +x /var/www/command.sh

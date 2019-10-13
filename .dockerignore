@@ -1,4 +1,5 @@
 .docker
+!.docker/apache
 docker-compose.yml
 var
 vendor

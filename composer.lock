@@ -3142,12 +3142,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mime.git",
-                "reference": "c7238f7732e267f302422d75a2f118c9aeb28f89"
+                "reference": "592a01c2569acaebc0cd64355047d8af755b2b95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mime/zipball/c7238f7732e267f302422d75a2f118c9aeb28f89",
-                "reference": "c7238f7732e267f302422d75a2f118c9aeb28f89",
+                "url": "https://api.github.com/repos/symfony/mime/zipball/592a01c2569acaebc0cd64355047d8af755b2b95",
+                "reference": "592a01c2569acaebc0cd64355047d8af755b2b95",
                 "shasum": ""
             },
             "require": {
@@ -3196,7 +3196,7 @@
                 "mime",
                 "mime-type"
             ],
-            "time": "2019-10-08T12:15:27+00:00"
+            "time": "2019-10-12T08:43:49+00:00"
         },
         {
             "name": "symfony/monolog-bridge",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5a858d17cde068ba781d6ce66244b0c",
+    "content-hash": "df53da567272a17aeae0d4668a38c1f7",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -4538,12 +4538,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vairogs/utils.git",
-                "reference": "0a71b0790eb8731db81739a718ada2e7f8f710ce"
+                "reference": "0e5398f3b550d59c3bcd81d90805eb7f1799bd03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vairogs/utils/zipball/0a71b0790eb8731db81739a718ada2e7f8f710ce",
-                "reference": "0a71b0790eb8731db81739a718ada2e7f8f710ce",
+                "url": "https://api.github.com/repos/vairogs/utils/zipball/0e5398f3b550d59c3bcd81d90805eb7f1799bd03",
+                "reference": "0e5398f3b550d59c3bcd81d90805eb7f1799bd03",
                 "shasum": ""
             },
             "require": {
@@ -4607,7 +4607,7 @@
                 "vairogs",
                 "validation"
             ],
-            "time": "2019-10-10T21:47:30+00:00"
+            "time": "2019-10-13T11:58:38+00:00"
         },
         {
             "name": "zendframework/zend-code",

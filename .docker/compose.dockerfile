@@ -25,11 +25,11 @@ RUN docker-php-ext-install gettext xml json simplexml pdo_mysql
 RUN docker-php-ext-configure intl && docker-php-ext-install intl
 
 #Add apache configs
-ADD .docker/000-default.conf /etc/apache2/sites-enabled/000-default.conf
-ADD .docker/ports.conf /etc/apache2/ports.conf
-ADD .docker/apache2.conf /etc/apache2/apache2.conf
-ADD .docker/envvars /etc/apache2/envvars
-ADD .docker/php.ini /usr/local/etc/php/php.ini
+ADD .docker/apache/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+ADD .docker/apache/ports.conf /etc/apache2/ports.conf
+ADD .docker/apache/apache2.conf /etc/apache2/apache2.conf
+ADD .docker/apache/envvars /etc/apache2/envvars
+ADD .docker/apache/php.ini /usr/local/etc/php/php.ini
 
 RUN service apache2 restart
 

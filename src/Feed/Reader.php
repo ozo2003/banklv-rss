@@ -1,12 +1,12 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace App\Feed;
 
 use App\Model\Feed;
 use DOMDocument;
 use Exception;
+use JsonException;
 use ReflectionException;
-use Symfony\Component\Config\Util\Exception\InvalidXmlException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -16,7 +16,6 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Vairogs\Utils\Text;
-use function sprintf;
 
 class Reader
 {
@@ -37,12 +36,13 @@ class Reader
      * @param string $url
      * @param array $options
      *
-     * @return Feed|null
+     * @return null|Feed
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ReflectionException
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws JsonException
      */
     public function read(string $url, array $options = []): ?Feed
     {
@@ -59,10 +59,18 @@ class Reader
                 $document = new DOMDocument();
                 $document->loadXML($content);
 
-                return (new RssParser())->parse($document);
+                return (new RssParser())->parseDocument($document);
             }
 
-            throw new InvalidXmlException(sprintf('Invalid xml received from %s', $url));
+            if (Text::starts($content, '[') || Text::starts($content, '{')) {
+                return (new JsonParser())->parseText($content);
+            }
+
+            if (Text::contains($content, ';')) {
+                return (new CsvParser())->parseText($content);
+            }
+
+            throw new BadRequestHttpException('Invalid response');
         }
 
         throw new BadRequestHttpException($response->getContent());

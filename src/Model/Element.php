@@ -5,7 +5,7 @@ namespace App\Model;
 class Element extends Feed
 {
     /**
-     * @var string
+     * @var string|null
      */
     protected $name;
 
@@ -20,19 +20,19 @@ class Element extends Feed
     protected $attributes = [];
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      *
      * @return Element
      */
-    public function setName(string $name): Element
+    public function setName(?string $name): Element
     {
         $this->name = $name;
 

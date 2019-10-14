@@ -13,7 +13,7 @@ use Vairogs\Utils\Text;
 use function count;
 use const XML_ELEMENT_NODE;
 
-class RssParser
+class RssParser implements Parser
 {
     /**
      * @param DOMDocument $document
@@ -21,7 +21,7 @@ class RssParser
      * @return Feed|null
      * @throws ReflectionException
      */
-    public function parse(DOMDocument $document): ?Feed
+    public function parseDocument(DOMDocument $document): ?Feed
     {
         if (null === ($element = $this->channel($document))) {
             return null;
@@ -120,5 +120,14 @@ class RssParser
         }
 
         return Text::getNumeric($value);
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return null|Feed
+     */
+    public function parseText(string $text): ?Feed {
+
     }
 }

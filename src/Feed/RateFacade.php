@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace App\Feed;
 
@@ -9,6 +9,7 @@ use App\Model\Element;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use JsonException;
 use ReflectionException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -61,6 +62,7 @@ class RateFacade
     /**
      * @return ArrayCollection
      * @throws ClientExceptionInterface
+     * @throws JsonException
      * @throws RedirectionExceptionInterface
      * @throws ReflectionException
      * @throws ServerExceptionInterface
@@ -75,6 +77,7 @@ class RateFacade
             $this->getBankRates($repo->findOneBy(['title' => 'bank']))->toArray(),
             $this->getFxexRates($repo->findOneBy(['title' => 'fxex']))->toArray(),
             $this->getFloatRates($repo->findOneBy(['title' => 'float']))->toArray(),
+            $this->getSebRates($repo->findOneBy(['title' => 'seb']))->toArray(),
         );
         //@formatter:on
 
@@ -82,7 +85,7 @@ class RateFacade
     }
 
     /**
-     * @param Exchange|null $exchange
+     * @param null|Exchange $exchange
      *
      * @return ArrayCollection
      * @throws ClientExceptionInterface
@@ -90,24 +93,31 @@ class RateFacade
      * @throws ReflectionException
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
+     * @throws JsonException
      */
-    private function getBankRates(?Exchange $exchange): ArrayCollection
+    private function getSebRates(?Exchange $exchange): ArrayCollection
     {
         $collection = new ArrayCollection();
 
         if (null !== $exchange && $feed = $this->reader->read($exchange->getUrl())) {
+            $rates = [];
+            $pubDate = null;
             foreach ($feed->getItems() as $item) {
                 /** @var Element $item */
-                if (true === $this->isDateAlreadySubmitted($item->getPubDate(), $exchange)) {
-                    $values = explode(' ', trim($item->getDescription()));
-                    $rates = [];
-                    for ($i = 0; $i < (count($values)); $i += 2) {
-                        $rates[$values[$i]] = (float)$values[$i + 1];
-                    }
-
-                    $this->save($collection, $exchange, $item->getPubDate(), $rates);
+                if (null === $pubDate) {
+                    $pubDate = (new DateTime())->setTimestamp($item->getElement('timestamp')
+                        ->getValue());
+                }
+                if (true === $this->isDateAlreadySubmitted($pubDate, $exchange, $currency = $item->getElement('currency_abbr')
+                        ->getValue())) {
+                    $rates[$currency] = $item->getElement('ecb_bank_rate')
+                        ->getValue();
                 }
             }
+            if (null !== $pubDate) {
+                $this->save($collection, $exchange, $pubDate, $rates);
+            }
+
             $this->em->flush();
         }
 
@@ -164,12 +174,84 @@ class RateFacade
     }
 
     /**
-     * @param Exchange|null $exchange
+     * @param null|Exchange $exchange
      *
      * @return ArrayCollection
-     * @throws ReflectionException
      * @throws ClientExceptionInterface
+     * @throws JsonException
      * @throws RedirectionExceptionInterface
+     * @throws ReflectionException
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getFloatRates(?Exchange $exchange): ArrayCollection
+    {
+        $collection = new ArrayCollection();
+
+        if (null !== $exchange && $feed = $this->reader->read($exchange->getUrl())) {
+            $rates = [];
+            $pubDate = null;
+            foreach ($feed->getItems() as $item) {
+                /** @var Element $item */
+                if (true === $this->isDateAlreadySubmitted($item->getPubDate(), $exchange, $currency = $item->getTargetCurrency())) {
+                    if (null === $pubDate) {
+                        $pubDate = $item->getPubDate();
+                    }
+                    $rates[$currency] = (float)$item->getExchangeRate();
+                }
+            }
+            if (null !== $pubDate) {
+                $this->save($collection, $exchange, $pubDate, $rates);
+            }
+
+            $this->em->flush();
+        }
+
+        return $collection;
+    }
+
+    /**
+     * @param null|Exchange $exchange
+     *
+     * @return ArrayCollection
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     * @throws RedirectionExceptionInterface
+     * @throws ReflectionException
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    private function getBankRates(?Exchange $exchange): ArrayCollection
+    {
+        $collection = new ArrayCollection();
+
+        if (null !== $exchange && $feed = $this->reader->read($exchange->getUrl())) {
+            foreach ($feed->getItems() as $item) {
+                /** @var Element $item */
+                if (true === $this->isDateAlreadySubmitted($item->getPubDate(), $exchange)) {
+                    $values = explode(' ', trim($item->getDescription()));
+                    $rates = [];
+                    for ($i = 0; $i < (count($values)); $i += 2) {
+                        $rates[$values[$i]] = (float)$values[$i + 1];
+                    }
+
+                    $this->save($collection, $exchange, $item->getPubDate(), $rates);
+                }
+            }
+            $this->em->flush();
+        }
+
+        return $collection;
+    }
+
+    /**
+     * @param null|Exchange $exchange
+     *
+     * @return ArrayCollection
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     * @throws RedirectionExceptionInterface
+     * @throws ReflectionException
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
@@ -188,42 +270,6 @@ class RateFacade
                         $pubDate = $item->getPubDate();
                     }
                     $rates[$currency] = Text::sanitizeFloat(str_replace('1 Euro = ', '', $item->getDescription()));
-                }
-            }
-            if (null !== $pubDate) {
-                $this->save($collection, $exchange, $pubDate, $rates);
-            }
-
-            $this->em->flush();
-        }
-
-        return $collection;
-    }
-
-    /**
-     * @param Exchange|null $exchange
-     *
-     * @return ArrayCollection
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ReflectionException
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
-     */
-    public function getFloatRates(?Exchange $exchange): ArrayCollection
-    {
-        $collection = new ArrayCollection();
-
-        if (null !== $exchange && $feed = $this->reader->read($exchange->getUrl())) {
-            $rates = [];
-            $pubDate = null;
-            foreach ($feed->getItems() as $item) {
-                /** @var Element $item */
-                if (true === $this->isDateAlreadySubmitted($item->getPubDate(), $exchange, $item->getTargetCurrency())) {
-                    if (null === $pubDate) {
-                        $pubDate = $item->getPubDate();
-                    }
-                    $rates[$item->getTargetCurrency()] = (float)$item->getExchangeRate();
                 }
             }
             if (null !== $pubDate) {

@@ -22,6 +22,32 @@ class Exchange
     protected $url;
 
     /**
+     * @var string
+     * @ORM\Column(type="string", nullable=false)
+     */
+    protected $type;
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return Exchange
+     */
+    public function setType(string $type): Exchange
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getTitle(): string
